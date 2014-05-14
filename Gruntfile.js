@@ -118,6 +118,21 @@ module.exports = function(grunt) {
             },
             sourceDir: 'test/fixtures/nsti',
             targetImage: 'tmp/spriteWithPrefix.png'
+        },
+        fake_css: {
+            options : {
+                generateCss: {
+                    //
+                    // note: turning fakeCss on will not generate any sprite
+                    // image, and ignore any options related to image sprite
+                    // generation.
+                    //
+                    fakeCss: true,
+                    targetCssPath : "tmp/fakeCss.css",
+                    cssClassPrefix: 'icon-'
+                }
+            },
+            sourceDir: 'test/fixtures/nsti'
         }
     },
 

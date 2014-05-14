@@ -89,5 +89,24 @@ exports.css_spritemaker = {
 
     test.equal(bad, 0, "All classes have 'icon-' prefix");
     test.done();
+  },
+  fake_css: function (test) {
+    test.expect(2);
+
+    test.ok(grunt.file.exists('tmp/fakeCss.css'), "fake css was generated");
+    var fileContent = grunt.file.read('tmp/fakeCss.css'),
+        bad = 0,
+        splittedFileContent = fileContent.split(grunt.util.linefeed);
+
+    splittedFileContent.unshift();
+    splittedFileContent.forEach(function (e) {
+        if (e.indexOf('url') === -1) {
+            bad++;
+        }
+    });
+
+    test.equal(bad, 0, "Fake css contains urls on all lines");
+    test.done();
+
   }
 };

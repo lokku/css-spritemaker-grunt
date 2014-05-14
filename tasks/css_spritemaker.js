@@ -107,90 +107,120 @@ module.exports = function(grunt) {
     }
 
     //
-    // make sure target image is specified and deal with directory
-    // creation.
+    // find out if user just wants to generate a fake css
     //
-    if (typeof targetImage !== 'undefined') {
-        if (options.createTargetPaths) {
-            grunt.file.write(targetImage, '');
+    var withFakeCss = false;
+    if (typeof options.generateCss !== 'undefined') {
+        if (options.generateCss.hasOwnProperty('fakeCss') && options.generateCss.fakeCss === true) {
+            withFakeCss = true;
+        }
+    }
+
+    //
+    // We need to skip image sprite generation and generate just the fake css
+    // instead!
+    //
+    if (withFakeCss) {
+        // just perform a bunch of checks and warn about whatever will be ignored.
+        if (typeof parts !== 'undefined') {
+           grunt.log.error("WARNING: The parts parameter is ignored when generating a fake css");
+        }
+        if (typeof layout !== 'undefined') {
+           grunt.log.error("WARNING: The layout parameter is ignored when generating a fake css");
+        }
+        if (typeof layoutName !== 'undefined') {
+           grunt.log.error("WARNING: The layoutName parameter is ignored when generating a fake css");
+        }
+        if (typeof targetImage !== 'undefined') {
+           grunt.log.error("WARNING: The targetImage parameter is ignored when generating a fake css");
         }
     }
     else {
-        grunt.log.error("the targetImage parameter must be specified. E.g., path/to/image.png");
-        return;
-    }
-
-    // make the sprite image
-    var that = this;
-    try {
-        if (typeof parts !== 'undefined') {
-            //
-            // We are dealing with composing layouts here ('parts' was specified)
-            //
-
-            if (typeof layout === 'undefined') {
-                grunt.log.error("A layout is needed for composing layouts!");
-                return;
-            }
-
-            SpriteMaker.compose_sprite(
-                'target_file', targetImage,
-                'parts', parts,
-                'layout', layout
-            );
+        //
+        // make sure target image is specified and deal with directory
+        // creation.
+        //
+        if (typeof targetImage === 'undefined') {
+            grunt.log.error("the targetImage parameter must be specified. E.g., path/to/image.png");
+            return;
         }
-        else {
-            if (typeof sourceDir !== 'undefined') {
 
-                if (typeof layout !== 'undefined') {
-                    SpriteMaker.make_sprite(
-                        'source_dir', sourceDir,
-                        'target_file', targetImage,
-                        'layout', layout
-                    );
+        if (options.createTargetPaths) {
+            grunt.file.write(targetImage, '');
+        }
+
+        // make the sprite image
+        var that = this;
+        try {
+            if (typeof parts !== 'undefined') {
+                //
+                // We are dealing with composing layouts here ('parts' was specified)
+                //
+
+                if (typeof layout === 'undefined') {
+                    grunt.log.error("A layout is needed for composing layouts!");
+                    return;
                 }
-                else if (typeof layoutName !== 'undefined') {
-                    SpriteMaker.make_sprite(
-                        'source_dir', sourceDir,
-                        'target_file', targetImage,
-                        'layout_name', layoutName
-                    );
-                }
-                else {
-                    SpriteMaker.make_sprite(
-                        'source_dir', sourceDir,
-                        'target_file', targetImage
-                    );
-                }
+
+                SpriteMaker.compose_sprite(
+                    'target_file', targetImage,
+                    'parts', parts,
+                    'layout', layout
+                );
             }
-            else if (typeof sourceImages !== 'undefined') {
+            else {
+                if (typeof sourceDir !== 'undefined') {
 
-                if (typeof layout !== 'undefined') {
-                    SpriteMaker.make_sprite(
-                        'source_images', sourceImages,
-                        'target_file', targetImage,
-                        'layout', layout
-                    );
+                    if (typeof layout !== 'undefined') {
+                        SpriteMaker.make_sprite(
+                            'source_dir', sourceDir,
+                            'target_file', targetImage,
+                            'layout', layout
+                        );
+                    }
+                    else if (typeof layoutName !== 'undefined') {
+                        SpriteMaker.make_sprite(
+                            'source_dir', sourceDir,
+                            'target_file', targetImage,
+                            'layout_name', layoutName
+                        );
+                    }
+                    else {
+                        SpriteMaker.make_sprite(
+                            'source_dir', sourceDir,
+                            'target_file', targetImage
+                        );
+                    }
                 }
-                else if (typeof layoutName !== 'undefined') {
-                    SpriteMaker.make_sprite(
-                        'source_images', sourceImages,
-                        'target_file', targetImage,
-                        'layout_name', layoutName
-                    );
-                }
-                else {
-                    SpriteMaker.make_sprite(
-                        'source_images', sourceImages,
-                        'target_file', targetImage
-                    );
+                else if (typeof sourceImages !== 'undefined') {
+
+                    if (typeof layout !== 'undefined') {
+                        SpriteMaker.make_sprite(
+                            'source_images', sourceImages,
+                            'target_file', targetImage,
+                            'layout', layout
+                        );
+                    }
+                    else if (typeof layoutName !== 'undefined') {
+                        SpriteMaker.make_sprite(
+                            'source_images', sourceImages,
+                            'target_file', targetImage,
+                            'layout_name', layoutName
+                        );
+                    }
+                    else {
+                        SpriteMaker.make_sprite(
+                            'source_images', sourceImages,
+                            'target_file', targetImage
+                        );
+                    }
                 }
             }
         }
-    }
-    catch (e) {
-        grunt.log.error(e);
-        return;
+        catch (e) {
+            grunt.log.error(e);
+            return;
+        }
     }
 
     //
@@ -198,22 +228,58 @@ module.exports = function(grunt) {
     //
     if (typeof options.generateCss !== 'undefined') {
         var cssOpts = options.generateCss;
-        try {
-            if (typeof cssOpts.renameSpriteImagePath === 'undefined') {
-                SpriteMaker.print_css(
-                    'filename', cssOpts.targetCssPath
-                );
+
+        if (withFakeCss) {
+
+            try {
+                if (!cssOpts.hasOwnProperty('targetCssPath')) {
+                    grunt.log.error("you need to specify targetCssPath option otherwise I don't know where to create the fake css.");
+                    return;
+                }
+
+                if (options.createTargetPaths) {
+                    grunt.file.write(cssOpts.targetCssPath, '');
+                }
+
+                if (typeof sourceDir !== 'undefined') {
+                    SpriteMaker.print_fake_css(
+                        'filename', cssOpts.targetCssPath,
+                        'source_dir', sourceDir
+                    );
+                }
+                else if (typeof sourceImages !== 'undefined') {
+                    SpriteMaker.print_fake_css(
+                        'filename', cssOpts.targetCssPath,
+                        'source_images', sourceImages
+                    );
+                }
+                else {
+                    throw "please specify sourceDir or sourceImages with fakeCss = true!";
+                }
             }
-            else {
-                SpriteMaker.print_css(
-                    'filename', cssOpts.targetCssPath,
-                    'sprite_filename', cssOpts.renameSpriteImagePath
-                );
+            catch (e) {
+                grunt.log.error(e);
+                return;
             }
         }
-        catch (e) {
-            grunt.log.error(e);
-            return;
+        else {
+            try {
+                if (typeof cssOpts.renameSpriteImagePath === 'undefined') {
+                    SpriteMaker.print_css(
+                        'filename', cssOpts.targetCssPath
+                    );
+                }
+                else {
+                    SpriteMaker.print_css(
+                        'filename', cssOpts.targetCssPath,
+                        'sprite_filename', cssOpts.renameSpriteImagePath
+                    );
+                }
+            }
+            catch (e) {
+                grunt.log.error(e);
+                return;
+            }
         }
     }
 

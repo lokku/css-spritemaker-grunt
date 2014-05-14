@@ -10,7 +10,7 @@ The requirements of this plugin are:
 
 - Perl 5 installed and compiled with -fPIC and -Duseshrplib. Normally, linux distribution's system perl works.
 
-- CSS::SpriteMaker module `0.09+` installed from CPAN (`cpan install CSS::SpriteMaker`). You should be able to run `perldoc CSS::SpriteMaker`.
+- CSS::SpriteMaker module `0.10+` installed from CPAN (`cpan install CSS::SpriteMaker`). You should be able to run `perldoc CSS::SpriteMaker`.
 
 If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you're familiar with that process, you may install this plugin with this command:
 
@@ -212,6 +212,34 @@ As you can see each part can be independently specified. Two options can be spec
 - includeInCss: if set to false, the resulting `sprite.css` stylesheet will not include the images from the layout part in which the option is specified;
 
 - removeSourcePadding: if set to false, will leave the padding found in source images untouched. Otherwise each image in the part will have the surrounding padding (transparent color) removed.
+
+#### Fake CSS
+
+Sometimes you don't want to wait for the layout to be computed and just need a css without the sprite image. This css will be including images using a url attribute. Rules will look like:
+
+    .icon-zoom- { url('test/fixtures/nsti/zoom--.png'); width: 32px; height: 32px; }
+
+To generate a fake css just specify `fakeCss = true` among the options:
+
+```js
+grunt.initConfig({
+  css_spritemaker: {
+      options : {
+          generateCss: {
+              fakeCss: true, // activate fake css mode
+              targetCssPath : "tmp/fakeCss.css", // required
+              cssClassPrefix: 'icon-'            // optional
+          }
+      },
+      // where to find the source images (also sourceImages is fine here)
+      sourceDir: 'test/fixtures/nsti'
+
+      // NOTE: in fake css mode, no image or layout related parameter must be specified!
+  },
+});
+```
+IMPORTANT NOTE: turning fakeCss on will not generate any sprite image, and ignore any options related to image sprite generation. grunt-css-spritemaker will warn about this.
+
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).

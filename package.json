@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/darksmo/css-spritemaker-grunt.git"
+    "url": "git://github.com/lokku/css-spritemaker-grunt.git"
   },
   "bugs": {
-    "url": "https://github.com/darksmo/css-spritemaker-grunt/issues"
+    "url": "https://github.com/lokku/css-spritemaker-grunt/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/darksmo/css-spritemaker-grunt/blob/master/LICENSE-MIT"
+      "url": "https://github.com/lokku/css-spritemaker-grunt/blob/master/LICENSE-MIT"
     }
   ],
   "engines": {

@@ -26,7 +26,8 @@ module.exports = function(grunt) {
             sourceImages : 'source_images',
             layoutName : 'layout_name',
             includeInCss : 'include_in_css',
-            removeSourcePadding : 'remove_source_padding'
+            removeSourcePadding : 'remove_source_padding',
+            sourceDir : 'source_dir'
         };
 
         var typeOfObj = grunt.util.kindOf(obj),

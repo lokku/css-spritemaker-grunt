@@ -1,0 +1,47 @@
+{
+  "name": "grunt-css-spritemaker",
+  "description": "Combine multiple images into a CSS Sprite",
+  "version": "0.1.0",
+  "homepage": "https://github.com/darksmo/css-spritemaker-grunt",
+  "author": {
+    "name": "Savio Dimatteo",
+    "company" : "Lokku Ltd.",
+    "email": "darksmo@gmail.com",
+    "url": "http://www.savio.dimatteo.it"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/darksmo/css-spritemaker-grunt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/darksmo/css-spritemaker-grunt/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/darksmo/css-spritemaker-grunt/blob/master/LICENSE-MIT"
+    }
+  ],
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.4",
+    "grunt-contrib-clean": "^0.5.0",
+    "grunt-contrib-jshint": "^0.9.2",
+    "grunt-contrib-nodeunit": "^0.3.3",
+    "perl": "^1.3.0"
+  },
+  "peerDependencies": {
+    "grunt": "~0.4.4"
+  },
+  "keywords": [
+    "gruntplugin",
+    "css",
+    "sprite",
+    "spritesheet"
+  ]
+}

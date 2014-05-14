@@ -1,8 +1,8 @@
 /*
  * grunt-css-spritemaker
- * https://github.com/darksmo/css-spritemaker-grunt
+ * https://github.com/lokku/css-spritemaker-grunt
  *
- * Copyright (c) 2014 Savio Dimatteo
+ * Copyright (c) 2014 Lokku ltd.
  * Licensed under the MIT license.
  */
 

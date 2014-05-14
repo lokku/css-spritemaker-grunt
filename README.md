@@ -218,6 +218,10 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 ## Release History
 
-* 0.01 -  Wed May 14 01:58:44 CEST 2014
+* 0.1.0 -  Wed May 14 01:58:44 CEST 2014
 
-- First release
+    - First release
+
+* 0.1.1 -  Wed May 14 11:30:28 CEST 2014
+
+    - Update dependencies

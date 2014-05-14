@@ -253,3 +253,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 * 0.1.1 -  Wed May 14 11:30:28 CEST 2014
 
     - Update dependencies
+
+* 0.1.2 -  Thu May 15 00:01:24 CEST 2014
+
+    - added fakeCss option to generate fake CSS spritesheets (requires CSS::SpriteMaker 0.10+)

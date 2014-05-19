@@ -34,66 +34,86 @@ module.exports = function(grunt) {
             options : {
                 createTargetPaths: true,
             },
-            sourceDir: 'test/fixtures/nsti',
-            targetImage: 'tmp/sprite.png',
+            files: {
+                'tmp/sprite.png' : 'test/fixtures/nsti',
+            }
         },
         with_source_images: {
             options : {
                 createTargetPaths: false,
             },
-            sourceImages: [
+            src: [
                 'test/fixtures/nsti/homepage-bullet-orange.png', 
                 'test/fixtures/nsti/cancel-feature.png'
             ],
-            targetImage: 'tmp/withSourceImages.png',
+            dest: 'tmp/withSourceImages.png'
         },
         with_layout_name: {
             options : {
                 createTargetPaths: false,
+                generateImage: {
+                    layoutName: 'Packed'
+                }
             },
-            sourceDir: 'test/fixtures/nsti',
-            targetImage: 'tmp/withPackedLayout.png',
-            layoutName: 'Packed'
+            src: 'test/fixtures/nsti',
+            dest: 'tmp/withPackedLayout.png',
         },
         with_extended_layout_definition: {
             options : {
                 createTargetPaths: true,
-            },
-            sourceDir: 'test/fixtures/nsti',
-            targetImage: 'tmp/withExtendedLayoutDefinition.png',
-            layout: {
-                'name' : 'FixedDimension',
-                'options' : {
-                    n : '2'
+                generateImage: {
+                    layout: {
+                        'name' : 'FixedDimension',
+                        'options' : {
+                            n : '2'
+                        }
+                    }
                 }
-            }
+            },
+            src: 'test/fixtures/nsti',
+            dest: 'tmp/withExtendedLayoutDefinition.png',
         },
         with_composite_layout: {
             options : {
                 createTargetPaths: true,
+                generateImage: {
+                    //
+                    // The 'glue' layout goes here
+                    //
+                    layout: {
+                        'name' : 'FixedDimension',
+                        'options' : {
+                            n : '2'
+                        }
+                    }
+                }
             },
-            targetImage: 'tmp/withCompositeLayout.png',
-            parts : [
-                { sourceImages: [
-                      'test/fixtures/nsti/homepage-bullet-orange.png', 
-                      'test/fixtures/nsti/cancel-feature.png'
+            files: [
+                { src: [
+                    'test/fixtures/nsti/homepage-bullet-orange.png', 
+                    'test/fixtures/nsti/cancel-feature.png'
                   ],
-                  layoutName : 'Packed'
+                  dest: 'tmp/withCompositeLayout.png', // NOTE: must be the same
+                  options: {
+                      // compact layout spec
+                      layoutName: 'Packed'
+                  }
                 },
-                { sourceImages : ['test/fixtures/nsti'],
-                  layout : {
-                      name : 'DirectoryBased'
-                  },
-                  includeInCss : 0,
-                  removeSourcePadding : 1
+                { src: ['test/fixtures/nsti'],
+                  dest: 'tmp/withCompositeLayout.png', // NOTE: must be the same
+                  //
+                  // options specific to one part follow
+                  //
+                  options: {
+                      // 'extended' layout spec
+                      layout : {
+                          'name' : 'DirectoryBased'
+                      },
+                      includeInCss : 0,
+                      removeSourcePadding : 1
+                  }
                 }
-            ],
-            layout: {
-                'name' : 'FixedDimension',
-                'options' : {
-                    n : '2'
-                }
-            }
+            ]
         },
         with_css_stylesheet: {
             options : {
@@ -104,8 +124,8 @@ module.exports = function(grunt) {
                     renameSpriteImagePath : "somewhere/over/the/rainbow.png"
                 }
             },
-            sourceDir: 'test/fixtures/nsti',
-            targetImage: 'tmp/sprite.png'
+            src: 'test/fixtures/nsti',
+            dest: 'tmp/sprite.png'
         },
         with_prefix_stylesheet: {
             options : {
@@ -116,8 +136,8 @@ module.exports = function(grunt) {
                     cssClassPrefix: 'icon-'
                 }
             },
-            sourceDir: 'test/fixtures/nsti',
-            targetImage: 'tmp/spriteWithPrefix.png'
+            src: 'test/fixtures/nsti',
+            dest: 'tmp/spriteWithPrefix.png'
         },
         fake_css: {
             options : {
@@ -132,7 +152,7 @@ module.exports = function(grunt) {
                     cssClassPrefix: 'icon-'
                 }
             },
-            sourceDir: 'test/fixtures/nsti'
+            src: 'test/fixtures/nsti'
         }
     },
 

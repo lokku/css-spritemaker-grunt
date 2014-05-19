@@ -51,7 +51,7 @@ grunt.initConfig({
 Type: `Boolean`
 Default value: `false`
 
-If true, the path to targetImage will be created
+If true, the path to dest will be created
 
 #### options.generateCss
 Type: `Object`
@@ -70,21 +70,39 @@ Other options for `generateCss` are:
 
 In summary, this is the kind of object expected:
 
-    generateCss: {
-        // required
-        targetCssPath : "tmp/sprite.css",
-        // optional
-        renameSpriteImagePath : "somewhere/over/the/rainbow.png"
-        // optional
-        cssClassPrefix: "icon-"
-    }
+```js
+generateCss: {
+    // required
+    targetCssPath : "tmp/sprite.css",
+    // optional
+    renameSpriteImagePath : "somewhere/over/the/rainbow.png"
+    // optional
+    cssClassPrefix: "icon-"
+}
+```
+
+### options.generateImage
+Type: `Object`
+Default value: `undefined`
+
+Used to specify options related to image generation. At the moment you can specify layouts in this section. For example this is a structure like:
     
+```js
+generateImage: {
+    layout: {
+        'name' : 'FixedDimension',
+        'options' : {
+            n : '2'   // see CSS::SpriteMaker Docs!
+        }
+    }
+}
+```
 
 ### Usage Examples
 
 #### Generate a sprite from a directory containing images 
 
-In this example, the default options are used to generate the sprite image. All the images in sourceDir will be combined into a single image into tmp/sprite.png.
+In this example, the default options are used to generate the sprite image. All the images in src will be combined into a single image into tmp/sprite.png.
 
 ```js
 grunt.initConfig({
@@ -92,15 +110,15 @@ grunt.initConfig({
     options : {
         createTargetPaths: true,
     },
-    sourceDir: 'test/fixtures/nsti',
-    targetImage: 'tmp/sprite.png',
+    src: 'test/fixtures/nsti/',
+    dest: 'tmp/sprite.png'
   },
 });
 ```
 
 #### You can specify individual images and directories too!
 
-In this example, sourceImages is an array of files and directories.
+In this example, src is an array of files and directories.
 
 ```js
 grunt.initConfig({
@@ -108,11 +126,11 @@ grunt.initConfig({
     options : {
         createTargetPaths: false,
     },
-    sourceImages: [
+    src: [
         'images/bullet-orange.png', 
-        'images/iconsdir/'
+        'images/iconsdir/'              // a directory, ends with '/'
     ],
-    targetImage: 'tmp/withSourceImages.png',
+    dest: 'tmp/withSourceImages.png',
   },
 });
 ```
@@ -125,10 +143,12 @@ grunt.initConfig({
   css_spritemaker: {
     options : {
         createTargetPaths: false,
+        generateImage: {
+            layoutName: 'Packed'
+        }
     },
-    sourceDir: 'test/fixtures/nsti',
-    targetImage: 'tmp/withPackedLayout.png',
-    layoutName: 'Packed'
+    src: 'test/fixtures/nsti',
+    dest: 'tmp/withPackedLayout.png'
   },
 });
 ```
@@ -149,15 +169,17 @@ grunt.initConfig({
   css_spritemaker: {
     options : {
         createTargetPaths: true,
-    },
-    sourceDir: 'test/fixtures/nsti',
-    targetImage: 'tmp/withExtendedLayoutDefinition.png',
-    layout: {
-        'name' : 'FixedDimension',
-        'options' : {
-            n : '2'
+        generateImage: {
+            layout: {
+                'name' : 'FixedDimension',
+                'options' : {
+                    n : '2'   // see CSS::SpriteMaker Docs!
+                }
+            }
         }
-    }
+    },
+    src: 'test/fixtures/nsti/',
+    dest: 'tmp/withExtendedLayoutDefinition.png'
   },
 });
 ```
@@ -166,7 +188,9 @@ You can consult CSS::SpriteMaker documentation to know about the options for the
 
 #### Create sprite image using layouts of layouts
 
-In this example, the resulting sprite image (tmp/withCompositeLayout.png) is made up of two parts, which are in turn layouted through a 'glue' layout.
+In this example, the resulting sprite image (tmp/withCompositeLayout.png) is made up of two parts, which are in turn lay out through a 'glue' layout.
+
+Note the dest argument is the same across the various parts of the sprite.
 
 ```js
 grunt.initConfig({
@@ -176,33 +200,47 @@ grunt.initConfig({
         generateCss: {
             // required
             targetCssPath : "tmp/sprite.css",
+        },
+        generateImage: {
+            //
+            // The 'glue' layout goes here
+            //
+            layout: {
+                'name' : 'FixedDimension',
+                'options' : {
+                    n : '2'
+                }
+            }
         }
     },
-    targetImage: 'tmp/withCompositeLayout.png',
-    parts : [
-        { sourceImages: [
-              'test/fixtures/nsti/homepage-bullet-orange.png', 
-              'test/fixtures/nsti/cancel-feature.png'
+    files: [
+        //
+        // Parts of this sprite follow
+        //
+        { src: [
+            'test/fixtures/nsti/homepage-bullet-orange.png', 
+            'test/fixtures/nsti/cancel-feature.png'
           ],
-          layoutName : 'Packed'
+          dest: 'tmp/withCompositeLayout.png', // NOTE: is the same in the next file definition
+          options: {
+              layoutName: 'Packed'             // compact layout spec
+          }
         },
-        { sourceImages : ['test/fixtures/nsti'],
-          layout : {
-              name : 'DirectoryBased'
-          },
-          // optional
-          includeInCss : false,
-          // optional
-          removeSourcePadding : true
+        { src: ['test/fixtures/nsti'],
+          dest: 'tmp/withCompositeLayout.png', // See NOTE above
+          //
+          // options specific to one part follow
+          //
+          options: {
+              // 'extended' layout spec
+              layout : {
+                  'name' : 'DirectoryBased'
+              },
+              includeInCss : 0,
+              removeSourcePadding : 1
+          }
         }
-    ],
-    // glue the parts together with this layout:
-    layout: {
-        'name' : 'FixedDimension',
-        'options' : {
-            n : '2'
-        }
-    }
+    ]
   },
 });
 ```
@@ -232,7 +270,7 @@ grunt.initConfig({
           }
       },
       // where to find the source images (also sourceImages is fine here)
-      sourceDir: 'test/fixtures/nsti'
+      src: 'test/fixtures/nsti/'
 
       // NOTE: in fake css mode, no image or layout related parameter must be specified!
   },
@@ -245,6 +283,10 @@ IMPORTANT NOTE: turning fakeCss on will not generate any sprite image, and ignor
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
+
+* 0.2.0 -  Mon May 19 11:17:57 CEST 2014
+
+    - IMPORTANT: change of interface. Now css_spritemaker complies with grunt standard interface.
 
 * 0.1.0 -  Wed May 14 01:58:44 CEST 2014
 

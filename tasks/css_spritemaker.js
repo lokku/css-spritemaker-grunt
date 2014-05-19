@@ -67,16 +67,81 @@ module.exports = function(grunt) {
     // Merge task-specific and/or target-specific options with these defaults.
     var options = this.options({
         createTargetPaths: false,
-        generateCss: undefined
+        generateCss: undefined,
+        generateImage: undefined
     });
 
-    var data = this.data,
-        sourceDir = data.sourceDir,
-        sourceImages = data.sourceImages,
-        layoutName = data.layoutName,
-        layout = data.layout,
-        parts = remapObjectKeysDeep(data.parts),
-        targetImage = data.targetImage;
+    var data = this.data;
+    var parts;
+    var part;
+
+    //
+    // some options re-mapping going on here
+    //
+
+    var layoutName;
+    var layout;
+    if (typeof options.generateImage === 'object') {
+        var oGi = options.generateImage;
+        if (oGi.hasOwnProperty('layoutName')) { layoutName = oGi.layoutName; }
+        if (oGi.hasOwnProperty('layout'))     { layout = oGi.layout;         }
+    }
+
+
+    var src = this.filesSrc;
+
+    var destsUnique = [];
+    var totalDestCount = 0;
+    var dest;
+
+    this.files.sort().forEach(function (e) {
+        if (typeof e.dest !== 'undefined') {
+            // count original destinations
+            totalDestCount++;
+
+            if (destsUnique[destsUnique.length - 1 ] !== e.dest) {
+                // keep unique destinations
+                destsUnique.push(e.dest);
+            }
+        }
+    });
+
+    if (destsUnique.length === 1) {
+        dest = destsUnique[0];
+    }
+    else if (destsUnique.length > 1) {
+        grunt.log.error('Found multiple destinations. Only a single "dest" must be specified!');
+        grunt.log.error('Have found the following dests: ' + grunt.util.linefeed + destsUnique.join(grunt.util.linefeed));
+        return;
+    }
+
+    //
+    // if multiple same destinations were specified, then it means we are
+    // dealing with a composite sprite.
+    //
+    if (totalDestCount > 1) {
+        parts = [];
+
+        this.files.forEach(function (f) {
+            part = {};
+            for (var key in f) {
+                if (f.hasOwnProperty(key) && key !== 'src' && key !== 'dest' && key !== 'orig') {
+                    part[key] = f[key];
+                }
+            }
+            // also add src
+            part.sourceImages = f.src;
+
+            parts.push(part);
+        });
+
+        // re-map parts
+        parts = remapObjectKeysDeep(parts);
+    }
+
+    //
+    // -- done dealing with options remapping
+    //
 
     //
     // initialize Perl first
@@ -131,8 +196,8 @@ module.exports = function(grunt) {
         if (typeof layoutName !== 'undefined') {
            grunt.log.error("WARNING: The layoutName parameter is ignored when generating a fake css");
         }
-        if (typeof targetImage !== 'undefined') {
-           grunt.log.error("WARNING: The targetImage parameter is ignored when generating a fake css");
+        if (typeof dest !== 'undefined') {
+           grunt.log.error("WARNING: The dest parameter is ignored when generating a fake css");
         }
     }
     else {
@@ -140,13 +205,13 @@ module.exports = function(grunt) {
         // make sure target image is specified and deal with directory
         // creation.
         //
-        if (typeof targetImage === 'undefined') {
-            grunt.log.error("the targetImage parameter must be specified. E.g., path/to/image.png");
+        if (typeof dest === 'undefined') {
+            grunt.log.error("the dest parameter must be specified. E.g., path/to/image.png");
             return;
         }
 
         if (options.createTargetPaths) {
-            grunt.file.write(targetImage, '');
+            grunt.file.write(dest, '');
         }
 
         // make the sprite image
@@ -163,58 +228,36 @@ module.exports = function(grunt) {
                 }
 
                 SpriteMaker.compose_sprite(
-                    'target_file', targetImage,
+                    'target_file', dest,
                     'parts', parts,
                     'layout', layout
                 );
+
+                grunt.log.writeln('Image Sprite created in ' + dest);
             }
             else {
-                if (typeof sourceDir !== 'undefined') {
-
-                    if (typeof layout !== 'undefined') {
-                        SpriteMaker.make_sprite(
-                            'source_dir', sourceDir,
-                            'target_file', targetImage,
-                            'layout', layout
-                        );
-                    }
-                    else if (typeof layoutName !== 'undefined') {
-                        SpriteMaker.make_sprite(
-                            'source_dir', sourceDir,
-                            'target_file', targetImage,
-                            'layout_name', layoutName
-                        );
-                    }
-                    else {
-                        SpriteMaker.make_sprite(
-                            'source_dir', sourceDir,
-                            'target_file', targetImage
-                        );
-                    }
+                if (typeof layout !== 'undefined') {
+                    SpriteMaker.make_sprite(
+                        'source_images', src,
+                        'target_file', dest,
+                        'layout', layout
+                    );
                 }
-                else if (typeof sourceImages !== 'undefined') {
-
-                    if (typeof layout !== 'undefined') {
-                        SpriteMaker.make_sprite(
-                            'source_images', sourceImages,
-                            'target_file', targetImage,
-                            'layout', layout
-                        );
-                    }
-                    else if (typeof layoutName !== 'undefined') {
-                        SpriteMaker.make_sprite(
-                            'source_images', sourceImages,
-                            'target_file', targetImage,
-                            'layout_name', layoutName
-                        );
-                    }
-                    else {
-                        SpriteMaker.make_sprite(
-                            'source_images', sourceImages,
-                            'target_file', targetImage
-                        );
-                    }
+                else if (typeof layoutName !== 'undefined') {
+                    SpriteMaker.make_sprite(
+                        'source_images', src,
+                        'target_file', dest,
+                        'layout_name', layoutName
+                    );
                 }
+                else {
+                    SpriteMaker.make_sprite(
+                        'source_images', src,
+                        'target_file', dest
+                    );
+                }
+
+                grunt.log.writeln('Image Sprite created in ' + dest);
             }
         }
         catch (e) {
@@ -241,21 +284,19 @@ module.exports = function(grunt) {
                     grunt.file.write(cssOpts.targetCssPath, '');
                 }
 
-                if (typeof sourceDir !== 'undefined') {
+                if (typeof src !== 'undefined') {
+
                     SpriteMaker.print_fake_css(
                         'filename', cssOpts.targetCssPath,
-                        'source_dir', sourceDir
-                    );
-                }
-                else if (typeof sourceImages !== 'undefined') {
-                    SpriteMaker.print_fake_css(
-                        'filename', cssOpts.targetCssPath,
-                        'source_images', sourceImages
+                        'source_images', src
                     );
                 }
                 else {
-                    throw "please specify sourceDir or sourceImages with fakeCss = true!";
+                    throw "please specify src with fakeCss = true!";
                 }
+
+                grunt.log.writeln('CSS Sprite sheet created in ' + 
+                    cssOpts.targetCssPath);
             }
             catch (e) {
                 grunt.log.error(e);
@@ -275,16 +316,17 @@ module.exports = function(grunt) {
                         'sprite_filename', cssOpts.renameSpriteImagePath
                     );
                 }
+
+                grunt.log.writeln('CSS Sprite sheet created in ' + 
+                    cssOpts.targetCssPath);
             }
             catch (e) {
                 grunt.log.error(e);
                 return;
             }
         }
+        // Print a success message.
     }
-
-    // Print a success message.
-    grunt.log.writeln('Css created in ' + targetImage);
   });
 
 };

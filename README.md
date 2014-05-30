@@ -237,7 +237,8 @@ grunt.initConfig({
                   'name' : 'DirectoryBased'
               },
               includeInCss : 0,
-              removeSourcePadding : 1
+              removeSourcePadding : 1, // first remove padding from source images
+              addExtraPadding: 5       // then add extra 5px padding
           }
         }
     ]
@@ -249,7 +250,9 @@ As you can see each part can be independently specified. Two options can be spec
 
 - includeInCss: if set to false, the resulting `sprite.css` stylesheet will not include the images from the layout part in which the option is specified;
 
-- removeSourcePadding: if set to false, will leave the padding found in source images untouched. Otherwise each image in the part will have the surrounding padding (transparent color) removed.
+- removeSourcePadding: if set to false, won't touch the padding in source images. Otherwise each image in the part will have the surrounding padding (transparent color) removed.
+
+- addExtraPadding: amount of pixel of padding to add to each image. 
 
 #### Fake CSS
 
@@ -283,6 +286,10 @@ IMPORTANT NOTE: turning fakeCss on will not generate any sprite image, and ignor
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
+
+* 0.2.1 - Fri May 30 12:06:49 CEST 2014
+
+    - allow addExtraPadding option introduced in CSS::SpriteMaker v0.14
 
 * 0.2.0 -  Mon May 19 11:17:57 CEST 2014
 

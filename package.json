@@ -1,7 +1,7 @@
 {
   "name": "grunt-css-spritemaker",
   "description": "Combine multiple images into a CSS Sprite",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "https://github.com/darksmo/css-spritemaker-grunt",
   "author": {
     "name": "Savio Dimatteo",

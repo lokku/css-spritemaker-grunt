@@ -115,6 +115,49 @@ module.exports = function(grunt) {
                 }
             ]
         },
+        with_composite_layout_and_padding: {
+            options : {
+                createTargetPaths: true,
+                generateImage: {
+                    //
+                    // The 'glue' layout goes here
+                    //
+                    layout: {
+                        'name' : 'FixedDimension',
+                        'options' : {
+                            n : '2'
+                        }
+                    }
+                }
+            },
+            files: [
+                { src: [
+                    'test/fixtures/nsti/homepage-bullet-orange.png', 
+                    'test/fixtures/nsti/cancel-feature.png'
+                  ],
+                  dest: 'tmp/withCompositeLayoutAndPadding.png', // NOTE: must be the same
+                  options: {
+                      // compact layout spec
+                      layoutName: 'DirectoryBased',
+                  }
+                },
+                { src: ['test/fixtures/nsti'],
+                  dest: 'tmp/withCompositeLayoutAndPadding.png', // NOTE: must be the same
+                  //
+                  // options specific to one part follow
+                  //
+                  options: {
+                      // 'extended' layout spec
+                      layout : {
+                          'name' : 'Packed'
+                      },
+                      includeInCss : 0,
+                      removeSourcePadding : 1,
+                      addExtraPadding: 5
+                  }
+                }
+            ]
+        },
         with_css_stylesheet: {
             options : {
                 createTargetPaths: false,

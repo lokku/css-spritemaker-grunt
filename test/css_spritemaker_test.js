@@ -90,6 +90,13 @@ exports.css_spritemaker = {
     test.equal(bad, 0, "All classes have 'icon-' prefix");
     test.done();
   },
+  with_composite_layout_and_padding: function (test) {
+    test.expect(1);
+
+    test.ok(grunt.file.exists('tmp/withCompositeLayoutAndPadding.png'), "sprite file with complex layouts was generated");
+
+    test.done();
+  },
   fake_css: function (test) {
     test.expect(2);
 

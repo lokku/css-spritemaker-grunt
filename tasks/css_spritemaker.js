@@ -27,7 +27,8 @@ module.exports = function(grunt) {
             layoutName : 'layout_name',
             includeInCss : 'include_in_css',
             removeSourcePadding : 'remove_source_padding',
-            sourceDir : 'source_dir'
+            sourceDir : 'source_dir',
+            addExtraPadding: 'add_extra_padding'
         };
 
         var typeOfObj = grunt.util.kindOf(obj),
@@ -68,7 +69,8 @@ module.exports = function(grunt) {
     var options = this.options({
         createTargetPaths: false,
         generateCss: undefined,
-        generateImage: undefined
+        generateImage: undefined,
+        addExtraPadding: 0
     });
 
     var data = this.data;
@@ -125,10 +127,24 @@ module.exports = function(grunt) {
         this.files.forEach(function (f) {
             part = {};
             for (var key in f) {
-                if (f.hasOwnProperty(key) && key !== 'src' && key !== 'dest' && key !== 'orig') {
+                if (f.hasOwnProperty(key) && 
+                    key !== 'src'         && 
+                    key !== 'dest'        && 
+                    key !== 'options'     &&
+                    key !== 'orig') {
+
                     part[key] = f[key];
                 }
             }
+            // take care of options if any have been specified
+            if (f.hasOwnProperty('options')) {
+                for (var option in f.options) {
+                    if (f.options.hasOwnProperty(option)) {
+                        part[option] = f.options[option];
+                    }
+                }
+            }
+
             // also add src
             part.sourceImages = f.src;
 
@@ -325,7 +341,6 @@ module.exports = function(grunt) {
                 return;
             }
         }
-        // Print a success message.
     }
   });
 

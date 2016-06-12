@@ -6,7 +6,7 @@
 
 The requirements of this plugin are:
 
-- Grunt `~0.4.4`
+- Grunt `>=0.4.0`
 
 - Perl 5 installed and compiled with -fPIC and -Duseshrplib. Normally, linux distribution's system perl works.
 
@@ -286,6 +286,9 @@ IMPORTANT NOTE: turning fakeCss on will not generate any sprite image, and ignor
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
+
+* 0.2.2 - Sun Jun 12 11:11:31 CEST 2016
+    - update peerDependencies to be compatible with grunt 1.0
 
 * 0.2.1 - Fri May 30 12:06:49 CEST 2014
 
